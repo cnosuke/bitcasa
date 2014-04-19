@@ -13,6 +13,11 @@ module Bitcasa
       @client.do(:get, 'user', 'profile')
     end
 
+    def upload(upload_file, path = nil)
+      path ||= root_folder["path"]
+      @client.do(:post, 'files', "#{path}/", file: File.new(upload_file, "rb"))
+    end
+
     def folder(path = nil)
       path ||= root_folder["path"]
       @client.do(:get, 'folders', "#{path}/")
