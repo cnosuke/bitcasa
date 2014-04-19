@@ -4,7 +4,30 @@ Bundler.require
 module Bitcasa
   VERSION = '0.0.1'
 
-  class RESTClient
+  class API
+    def initialize
+      @client = Client.new
+    end
+
+    def user
+      @client.do(:get, 'user', 'profile')
+    end
+
+    def folder(path = nil)
+      path ||= root_folder["path"]
+      @client.do(:get, 'folders', "#{path}/")
+    end
+
+    def root_folder
+      @root_folder ||= begin
+        folder('/')['items'].
+          select{|e| e['sync_type'] == "infinite drive"}.
+          first
+      end
+    end
+  end
+
+  class Client
     API_BASE_URL = 'https://developer.api.bitcasa.com/v1'.freeze
 
     def initialize(access_token: nil)
@@ -15,13 +38,10 @@ module Bitcasa
       @access_token
     end
 
-    def api(method, path, resource = nil, opts = {})
+    def do(method, path, resource = nil, opts = {})
       url = [API_BASE_URL, path, resource].join('/') + "?access_token=#{access_token}"
       response = RestClient.send(method, url, opts)
-      {
-        response: response,
-        body: JSON.parse(response)
-      }
+      JSON.parse(response)["result"]
     end
   end
 end
