@@ -28,6 +28,19 @@ module Bitcasa
       @client.do(:get, 'folders', "#{path}")
     end
 
+    def find_by(opts = {})
+      path = opts.delete(:path) || root_folder["path"]
+      key, value = opts.first
+      folder(path)['items'].select { |item|
+        case value.class.to_s
+        when 'Regexp'
+          item[key.to_s] =~ value
+        else
+          item[key.to_s] == value
+        end
+      }
+    end
+
     def create_folder(name, path = nil)
       path ||= root_folder["path"]
       @client.do(:post, 'folders', path, folder_name: name)
@@ -57,9 +70,7 @@ module Bitcasa
     def do(method, path, resource = nil, opts = {})
       url = [API_BASE_URL, path, resource].compact.join('/')
       case method
-      when :post
-        url << "?access_token=#{access_token}"
-      when :delete
+      when :post, :delete
         url << "?access_token=#{access_token}"
       else
         opts = { params: {access_token: access_token}.merge(opts) }
