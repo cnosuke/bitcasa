@@ -1,3 +1,2 @@
-gem 'rest-client'
-gem 'json'
-gem 'pry'
+source 'https://rubygems.org'
+gemspec
