@@ -18,14 +18,24 @@ module Bitcasa
       @client.do(:post, 'files', "#{path}/", file: File.new(upload_file, "rb"))
     end
 
+    def delete(path)
+      raise ArgumentError unless path
+      @client.do(:delete, 'files', nil, path: path)
+    end
+
     def folder(path = nil)
       path ||= root_folder["path"]
-      @client.do(:get, 'folders', "#{path}/")
+      @client.do(:get, 'folders', "#{path}")
+    end
+
+    def create_folder(name, path = nil)
+      path ||= root_folder["path"]
+      @client.do(:post, 'folders', path, folder_name: name)
     end
 
     def root_folder
       @root_folder ||= begin
-        folder('/')['items'].
+        folder('')['items'].
           select{|e| e['sync_type'] == "infinite drive"}.
           first
       end
@@ -34,6 +44,7 @@ module Bitcasa
 
   class Client
     API_BASE_URL = 'https://developer.api.bitcasa.com/v1'.freeze
+    #API_BASE_URL = 'http://localhost:4567'
 
     def initialize(access_token: nil)
       @access_token = access_token || ENV['ACCESS_TOKEN'] || raise(ArgumentError)
@@ -44,7 +55,17 @@ module Bitcasa
     end
 
     def do(method, path, resource = nil, opts = {})
-      url = [API_BASE_URL, path, resource].join('/') + "?access_token=#{access_token}"
+      url = [API_BASE_URL, path, resource].compact.join('/')
+      case method
+      when :post
+        url << "?access_token=#{access_token}"
+      when :delete
+        url << "?access_token=#{access_token}"
+      else
+        opts = { params: {access_token: access_token}.merge(opts) }
+      end
+      opts.merge!(multipart: true)
+
       response = RestClient.send(method, url, opts)
       JSON.parse(response)["result"]
     end
