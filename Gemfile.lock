@@ -1,21 +1,21 @@
-GEM
+PATH
+  remote: .
   specs:
-    coderay (1.1.0)
-    json (1.8.1)
-    method_source (0.8.2)
+    bitcasa (0.0.1)
+      rest-client
+
+GEM
+  remote: https://rubygems.org/
+  specs:
     mime-types (1.25.1)
-    pry (0.9.12.4)
-      coderay (~> 1.0)
-      method_source (~> 0.8)
-      slop (~> 3.4)
+    rake (10.1.1)
     rest-client (1.6.7)
       mime-types (>= 1.16)
-    slop (3.4.7)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  json
-  pry
-  rest-client
+  bitcasa!
+  bundler (~> 1.5)
+  rake
