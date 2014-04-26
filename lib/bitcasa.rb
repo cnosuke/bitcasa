@@ -3,8 +3,6 @@ Bundler.require
 require 'bitcasa/version'
 
 module Bitcasa
-  VERSION = '0.0.1'
-
   class API
     def initialize
       @client = Client.new
