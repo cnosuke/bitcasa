@@ -1,6 +1,5 @@
-require 'bundler'
-Bundler.require
 require 'bitcasa/version'
+require 'rest-client'
 
 module Bitcasa
   class API
