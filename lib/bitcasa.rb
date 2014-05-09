@@ -54,8 +54,12 @@ module Bitcasa
   end
 
   class Client
-    API_BASE_URL = 'https://developer.api.bitcasa.com/v1'.freeze
-    #API_BASE_URL = 'http://localhost:4567'
+    if ENV['DEV_MODE']
+      API_BASE_URL = 'http://localhost:4567'
+    else
+      API_BASE_URL = 'https://developer.api.bitcasa.com/v1'.freeze
+    end
+
 
     def initialize(access_token: nil)
       @access_token = access_token || ENV['ACCESS_TOKEN'] || raise(ArgumentError)
